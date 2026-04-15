@@ -29,10 +29,13 @@ AccelerometerTrusted_node1776213206651 = glueContext.create_dynamic_frame.from_c
 # Script generated for node Join
 Join_node1776213248741 = Join.apply(frame1=AccelerometerTrusted_node1776213206651, frame2=StepTrainerTrusted_node1776213205751, keys1=["timestamp"], keys2=["right_sensorreadingtime"], transformation_ctx="Join_node1776213248741")
 
+# Script generated for node Select Fields
+SelectFields_node1776217691994 = SelectFields.apply(frame=Join_node1776213248741, paths=["x", "y", "z", "right_sensorreadingtime", "right_distancefromobject", "right_serialnumber", "timestamp"], transformation_ctx="SelectFields_node1776217691994")
+
 # Script generated for node Machine Learning Curated
-EvaluateDataQuality().process_rows(frame=Join_node1776213248741, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1776212092857", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
+EvaluateDataQuality().process_rows(frame=SelectFields_node1776217691994, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1776212092857", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
 MachineLearningCurated_node1776213316332 = glueContext.getSink(path="s3://udacity-landing-zone-bucket/machine_learning_curated/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=[], enableUpdateCatalog=True, transformation_ctx="MachineLearningCurated_node1776213316332")
 MachineLearningCurated_node1776213316332.setCatalogInfo(catalogDatabase="stedi_db",catalogTableName="machine_learning_curated")
 MachineLearningCurated_node1776213316332.setFormat("json")
-MachineLearningCurated_node1776213316332.writeFrame(Join_node1776213248741)
+MachineLearningCurated_node1776213316332.writeFrame(SelectFields_node1776217691994)
 job.commit()
